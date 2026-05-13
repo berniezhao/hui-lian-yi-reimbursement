@@ -1,11 +1,14 @@
 ---
 name: hui-lian-yi-reimbursement
-description: Operate HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table data. Use for reading the user's 钉钉多维表差旅报销助手, creating or editing 汇联易差旅费用报销 drafts, uploading travel invoices and support files, adding 机票/火车/住宿费/差旅补贴 lines, handling fragile HuiLianYi SPA selectors/date pickers/upload controls, and stopping before final submission. Trigger keywords: 汇联易, HuiLianYi, 报销, 填报销, 报销单, 差旅费用报销, 钉钉多维表, 发票生成费用, 手录费用, 差旅补贴, 机票, 登机牌, 酒店发票.
+version: "0.1.0"
+description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table data. Use for reading the user's 钉钉多维表差旅报销助手, creating or editing 汇联易差旅费用报销 drafts, uploading travel invoices and support files, adding 机票/火车/住宿费/差旅补贴 lines, handling fragile HuiLianYi SPA selectors/date pickers/upload controls, and stopping before final submission. Trigger keywords: 汇联易, HuiLianYi, 报销, 填报销, 报销单, 差旅费用报销, 钉钉多维表, 发票生成费用, 手录费用, 差旅补贴, 机票, 登机牌, 酒店发票."
 ---
 
 # HuiLianYi Reimbursement
 
 Operate HuiLianYi travel reimbursement drafts from the user's DingTalk AI Table. HuiLianYi is a fragile SPA: prepare data first, perform one small verified UI action at a time, and never submit automatically.
+
+Skill version: `0.1.0`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
 
 ## Non-Negotiables
 
@@ -245,4 +248,3 @@ If a step fails:
 Minimal user update style:
 - good: `我现在看到 ER... 单号 cell ref 是 e28，我只点它。`
 - bad: `应该已经进入详情页了，所以接下来...`
-
