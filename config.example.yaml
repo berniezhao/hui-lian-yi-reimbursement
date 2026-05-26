@@ -1,7 +1,8 @@
 dingtalk_aitable:
-  # Share this URL with colleagues; the skill discovers base_id, table IDs,
-  # and field role mappings automatically and caches them under .cache/.
-  url: "https://alidocs.dingtalk.com/i/nodes/2Amq4vjg89gPawDaIP64XbbbV3kdP0wQ"
+  # Create your own AI Table from the template, then paste the new table URL here.
+  # Template:
+  # https://alidocs.dingtalk.com/i/nodes/P7QG4Yx2Jp7ePkDPCgBNyEnEV9dEq3XD?corpId=ding1eff7bf4d86437eb35c2f4657eb6378f&iframeQuery=applicationId%3DKY9tlWg5NEHgfs8WT6IO2%26entrance%3Ddata
+  url: ""
 
 report_defaults:
   invoice_title_search: "021"

@@ -1,6 +1,6 @@
 ---
 name: hui-lian-yi-reimbursement
-version: "0.2.0"
+version: "0.2.1"
 description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table data. Use for reading the user's 钉钉多维表差旅报销助手, creating or editing 汇联易差旅费用报销 drafts, uploading travel invoices and support files, adding 机票/火车/住宿费/差旅补贴 lines, handling fragile HuiLianYi SPA selectors/date pickers/upload controls, and stopping before final submission. Trigger keywords: 汇联易, HuiLianYi, 报销, 填报销, 报销单, 差旅费用报销, 钉钉多维表, 发票生成费用, 手录费用, 差旅补贴, 机票, 登机牌, 酒店发票."
 ---
 
@@ -8,7 +8,7 @@ description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from Din
 
 Operate HuiLianYi travel reimbursement drafts from the user's DingTalk AI Table. HuiLianYi is a fragile SPA: prepare data first, perform one small verified UI action at a time, and never submit automatically.
 
-Skill version: `0.2.0`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
+Skill version: `0.2.1`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
 
 ## Non-Negotiables
 
@@ -24,6 +24,10 @@ Skill version: `0.2.0`. When updating this skill, increment the frontmatter `ver
 ## Configuration
 
 Use `config.local.yaml` if present. Otherwise use `config.example.yaml` as the template and ask the user before assuming personalized defaults.
+
+If no usable DingTalk AI Table URL is configured, tell the user to open the table template below, create their own copy, then paste the new table URL into `config.local.yaml` under `dingtalk_aitable.url`:
+
+https://alidocs.dingtalk.com/i/nodes/P7QG4Yx2Jp7ePkDPCgBNyEnEV9dEq3XD?corpId=ding1eff7bf4d86437eb35c2f4657eb6378f&iframeQuery=applicationId%3DKY9tlWg5NEHgfs8WT6IO2%26entrance%3Ddata
 
 Human-maintained config should contain only:
 
