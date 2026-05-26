@@ -3,7 +3,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
-OUTPUT_PATH="$DIST_DIR/hui-lian-yi-reimbursement.zip"
+VERSION="$(node -p "require('./package.json').version")"
+OUTPUT_PATH="$DIST_DIR/hui-lian-yi-reimbursement-$VERSION.zip"
 
 rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
