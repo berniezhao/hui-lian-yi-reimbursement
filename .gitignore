@@ -1,3 +1,4 @@
 .DS_Store
 config.local.yaml
 .cache/
+dist/
