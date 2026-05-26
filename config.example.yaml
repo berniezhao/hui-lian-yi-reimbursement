@@ -1,0 +1,15 @@
+dingtalk_aitable:
+  # Share this URL with colleagues; the skill discovers base_id, table IDs,
+  # and field role mappings automatically and caches them under .cache/.
+  url: "https://alidocs.dingtalk.com/i/nodes/2Amq4vjg89gPawDaIP64XbbbV3kdP0wQ"
+
+report_defaults:
+  invoice_title_search: "021"
+  invoice_title: "深圳卓正光锥科技有限公司-021"
+  cost_center_1: "集团职能部门"
+  cost_center_2: "软件研发部"
+  cost_center_3: "软件研发部"
+  is_r_and_d_project: "否"
+  travel_type: "其他（请在事由处说明）"
+  travel_scope_default: "跨省、直辖市"
+  payment_receiver: "current_user"

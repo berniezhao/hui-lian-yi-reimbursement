@@ -1,6 +1,6 @@
 ---
 name: hui-lian-yi-reimbursement
-version: "0.1.0"
+version: "0.2.0"
 description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table data. Use for reading the user's 钉钉多维表差旅报销助手, creating or editing 汇联易差旅费用报销 drafts, uploading travel invoices and support files, adding 机票/火车/住宿费/差旅补贴 lines, handling fragile HuiLianYi SPA selectors/date pickers/upload controls, and stopping before final submission. Trigger keywords: 汇联易, HuiLianYi, 报销, 填报销, 报销单, 差旅费用报销, 钉钉多维表, 发票生成费用, 手录费用, 差旅补贴, 机票, 登机牌, 酒店发票."
 ---
 
@@ -8,7 +8,7 @@ description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from Din
 
 Operate HuiLianYi travel reimbursement drafts from the user's DingTalk AI Table. HuiLianYi is a fragile SPA: prepare data first, perform one small verified UI action at a time, and never submit automatically.
 
-Skill version: `0.1.0`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
+Skill version: `0.2.0`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
 
 ## Non-Negotiables
 
@@ -21,26 +21,46 @@ Skill version: `0.1.0`. When updating this skill, increment the frontmatter `ver
 - Treat `click` success as transport success only; verify the business state changed.
 - If a validation popup appears, read the visible text. Confirm only when allowed by the user/rules.
 
+## Configuration
+
+Use `config.local.yaml` if present. Otherwise use `config.example.yaml` as the template and ask the user before assuming personalized defaults.
+
+Human-maintained config should contain only:
+
+- DingTalk AI Table URL
+- HuiLianYi main report defaults such as invoice title, cost centers, R&D flag, travel type, travel scope default, and payment receiver strategy
+
+Do not move stable company rules into config:
+
+- HuiLianYi URL and browser flow
+- expense type mapping
+- subsidy standards
+- attachment rules
+- file matching rules
+- safety rules such as never clicking final `提交`
+
+Local discovery/cache files belong under `.cache/` and are machine-maintained.
+
 ## Source Data
 
-Primary source: DingTalk AI Table `差旅报销助手`
+Primary source: DingTalk AI Table from config key `dingtalk_aitable.url`.
 
-URL: https://alidocs.dingtalk.com/i/nodes/2Amq4vjg89gPawDaIP64XbbbV3kdP0wQ
+Discover and cache source metadata before querying records:
 
-Known tables:
-
-| Table | Purpose | Table ID |
-|---|---|---|
-| `Trips` | one row per business trip / reimbursement bundle | `aRHU9rr` |
-| `Trip Details` | one row per voucher / expense detail | `wesjkCs` |
+1. Parse `base_id` from the last path segment of the DingTalk AI Table URL.
+2. Run `dws aitable base get --base-id <base_id> --format json` to verify access.
+3. Run `dws aitable table get --base-id <base_id> --format json` to list tables and fields.
+4. Identify the trip table and detail table by names/purpose, preferring `Trips` and `Trip Details` when present.
+5. Build a field role map from table schemas by matching field names and aliases below.
+6. If a required role is missing or ambiguous, ask the user once, then cache the resolved table IDs and field role map in `.cache/discovered-source.json`.
 
 Always read DingTalk data with `dws aitable ... --format json`. Do not scrape the DingTalk page.
 
 ```bash
-dws aitable base get --base-id 2Amq4vjg89gPawDaIP64XbbbV3kdP0wQ --format json
-dws aitable table get --base-id 2Amq4vjg89gPawDaIP64XbbbV3kdP0wQ --table-ids aRHU9rr,wesjkCs --format json
-dws aitable record query --base-id 2Amq4vjg89gPawDaIP64XbbbV3kdP0wQ --table-id aRHU9rr --query "<Trip ID or keyword>" --limit 10 --format json
-dws aitable record query --base-id 2Amq4vjg89gPawDaIP64XbbbV3kdP0wQ --table-id wesjkCs --query "<Trip ID>" --limit 30 --format json
+dws aitable base get --base-id <base_id> --format json
+dws aitable table get --base-id <base_id> --format json
+dws aitable record query --base-id <base_id> --table-id <trips_table_id> --query "<Trip ID or keyword>" --limit 10 --format json
+dws aitable record query --base-id <base_id> --table-id <trip_details_table_id> --query "<Trip ID>" --limit 30 --format json
 ```
 
 Record query responses use field IDs as keys; map them back to field names from `table get` before reasoning.
@@ -50,33 +70,33 @@ Important formats:
 - `attachment`: array with `filename`, `url`, `resourceId`, `resourceUrl`, etc.
 - date cells may include time/timezone; use the calendar date unless the form requires a time.
 
-Core `Trips` fields:
+Core `Trips` field roles and aliases:
 
-| DingTalk field | HuiLianYi use |
-|---|---|
-| `Trip ID` | link trip header to details |
-| `标题` / `行程摘要` | context check |
-| `出差人` | traveler check |
-| `开始日期` / `结束日期` | trip range and subsidy range |
-| `出发地` / `目的地` | route context |
-| `总金额` / `机票金额` / `酒店金额` / `其他金额` | reconciliation |
-| `凭证数量` / `缺失项` / `报销缺字段` / `报销准备状态` | readiness check |
-| `报销状态` / `汇联易状态` / `报销单ID` | create vs continue decision |
-| `报销建议事由` | preferred `事由` |
+| Role | Preferred aliases | HuiLianYi use |
+|---|---|---|
+| `trip_id` | `Trip ID`, `行程ID` | link trip header to details |
+| `title` | `标题`, `行程摘要` | context check |
+| `traveler` | `出差人` | traveler check |
+| `start_date` / `end_date` | `开始日期` / `结束日期` | trip range and subsidy range |
+| `origin` / `destination` | `出发地` / `目的地` | route context |
+| `amounts` | `总金额`, `机票金额`, `酒店金额`, `其他金额` | reconciliation |
+| `readiness` | `凭证数量`, `缺失项`, `报销缺字段`, `报销准备状态` | readiness check |
+| `report_status` / `report_id` | `报销状态`, `汇联易状态`, `报销单ID` | create vs continue decision |
+| `reason` | `报销建议事由` | preferred `事由` |
 
-Core `Trip Details` fields:
+Core `Trip Details` field roles and aliases:
 
-| DingTalk field | HuiLianYi use |
-|---|---|
-| `凭证类型` | invoice/support type |
-| `业务日期` | consumption date |
-| `发票号` / `票号/单号` | duplicate/matching check |
-| `乘机人/入住人` | traveler/guest check |
-| `出发地` / `目的地` / `承运/商家` / `航班/车次` | transport matching |
-| `金额` / `币种` | line amount |
-| `入住日期` / `退房日期` / `酒店名称` | hotel line fields |
-| `是否纳入报销` / `报销映射状态` / `报销项分类` | whether/how to create line |
-| `原始附件` | source file to download/upload |
+| Role | Preferred aliases | HuiLianYi use |
+|---|---|---|
+| `voucher_type` | `凭证类型` | invoice/support type |
+| `business_date` | `业务日期` | consumption date |
+| `document_no` | `发票号`, `票号/单号` | duplicate/matching check |
+| `person` | `乘机人/入住人`, `乘机人`, `入住人` | traveler/guest check |
+| `route_vendor_no` | `出发地`, `目的地`, `承运/商家`, `航班/车次` | transport matching |
+| `amount` / `currency` | `金额` / `币种` | line amount |
+| `hotel_fields` | `入住日期`, `退房日期`, `酒店名称` | hotel line fields |
+| `reimbursement_mapping` | `是否纳入报销`, `报销映射状态`, `报销项分类` | whether/how to create line |
+| `attachments` | `原始附件` | source file to download/upload |
 
 Before opening HuiLianYi, create a short plan:
 
@@ -123,19 +143,19 @@ For a new draft:
 
 ## Main Form
 
-Common values:
+Common values come from `report_defaults` in config:
 
 | Field | Value/source |
 |---|---|
 | `事由` | DingTalk `报销建议事由` or concise trip reason |
-| `发票抬头` | search `021`, choose `深圳卓正光锥科技有限公司-021` |
-| `成本中心-一级` | `集团职能部门` |
-| `成本中心-二级` | `软件研发部` |
-| `成本中心-三级` | `软件研发部` |
-| `是否属于研发项目费用` | `否` |
-| `出差类型` | `其他（请在事由处说明）` |
-| `出差范围` | derive from trip, e.g. `跨省、直辖市` |
-| `收款方` | current user, verify visible value |
+| `发票抬头` | search `report_defaults.invoice_title_search`, choose `report_defaults.invoice_title` |
+| `成本中心-一级` | `report_defaults.cost_center_1` |
+| `成本中心-二级` | `report_defaults.cost_center_2` |
+| `成本中心-三级` | `report_defaults.cost_center_3` |
+| `是否属于研发项目费用` | `report_defaults.is_r_and_d_project` |
+| `出差类型` | `report_defaults.travel_type` |
+| `出差范围` | derive from trip; fall back to `report_defaults.travel_scope_default` |
+| `收款方` | `report_defaults.payment_receiver`, usually `current_user` |
 
 Selector fields with a right-side `...` are more stable through the modal selector than inline dropdowns:
 
