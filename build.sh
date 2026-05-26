@@ -15,6 +15,7 @@ zip -r "$OUTPUT_PATH" . \
   -x '.git/*' \
   -x '.gitignore' \
   -x '.DS_Store' \
+  -x 'build.sh' \
   -x 'config.local.yaml' \
   -x '.cache/*' \
   -x 'dist/*'
