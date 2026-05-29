@@ -1,6 +1,6 @@
 ---
 name: hui-lian-yi-reimbursement
-version: "0.2.1"
+version: "0.2.2"
 description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table data. Use for reading the user's 钉钉多维表差旅报销助手, creating or editing 汇联易差旅费用报销 drafts, uploading travel invoices and support files, adding 机票/火车/住宿费/差旅补贴 lines, handling fragile HuiLianYi SPA selectors/date pickers/upload controls, and stopping before final submission. Trigger keywords: 汇联易, HuiLianYi, 报销, 填报销, 报销单, 差旅费用报销, 钉钉多维表, 发票生成费用, 手录费用, 差旅补贴, 机票, 登机牌, 酒店发票."
 ---
 
@@ -8,7 +8,7 @@ description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from Din
 
 Operate HuiLianYi travel reimbursement drafts from the user's DingTalk AI Table. HuiLianYi is a fragile SPA: prepare data first, perform one small verified UI action at a time, and never submit automatically.
 
-Skill version: `0.2.1`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
+Skill version: `0.2.2`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
 
 ## Non-Negotiables
 
@@ -151,7 +151,7 @@ Common values come from `report_defaults` in config:
 
 | Field | Value/source |
 |---|---|
-| `事由` | DingTalk `报销建议事由` or concise trip reason |
+| `事由` | DingTalk `报销建议事由` or concise trip reason. For a new report, append a new final line: `（本报销单由Codex协助填写）` |
 | `发票抬头` | search `report_defaults.invoice_title_search`, choose `report_defaults.invoice_title` |
 | `成本中心-一级` | `report_defaults.cost_center_1` |
 | `成本中心-二级` | `report_defaults.cost_center_2` |
