@@ -25,37 +25,38 @@ Skill version: `0.2.3`. When updating this skill, increment the frontmatter `ver
 
 Before reading DingTalk data, verify that the `dws` CLI is available:
 
-```bash
-which dws
-```
+- macOS / Linux: `which dws`
+- Windows: `where dws`
 
 If the command is not found, ask the user:
 
 > `dws` CLI 未安装，需要从 https://github.com/DingTalk-Real-AI/dingtalk-workspace-cli 安装才能读取钉钉数据。是否现在安装？
 
-Only proceed if the user agrees. Then check whether GitHub is reachable:
+Only proceed if the user agrees. Then detect the OS and check whether GitHub is reachable:
+
+**macOS / Linux — check GitHub:**
 
 ```bash
 curl -s --max-time 5 https://raw.githubusercontent.com > /dev/null && echo reachable || echo unreachable
 ```
 
-**GitHub reachable** — install via the official script:
+- Reachable → `curl -fsSL https://raw.githubusercontent.com/DingTalk-Real-AI/dingtalk-workspace-cli/main/scripts/install.sh | sh`
+- Unreachable → `npm install -g dingtalk-workspace-cli`
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/DingTalk-Real-AI/dingtalk-workspace-cli/main/scripts/install.sh | sh
+**Windows — check GitHub (PowerShell):**
+
+```powershell
+try { Invoke-WebRequest https://raw.githubusercontent.com -TimeoutSec 5 -UseBasicParsing | Out-Null; "reachable" } catch { "unreachable" }
 ```
 
-**GitHub unreachable** — fall back to npm (npm registry is usually accessible without a proxy):
+- Reachable → `irm https://raw.githubusercontent.com/DingTalk-Real-AI/dingtalk-workspace-cli/main/scripts/install.ps1 | iex`
+- Unreachable → `npm install -g dingtalk-workspace-cli`
 
-```bash
-npm install -g dingtalk-workspace-cli
-```
-
-If npm also fails, tell the user:
+If npm also fails on any platform, tell the user:
 
 > `dws` 安装失败，GitHub 和 npm 均无法访问。请您开启代理后重试，或手动从 https://github.com/DingTalk-Real-AI/dingtalk-workspace-cli/releases 下载对应平台的二进制文件并放入 PATH。
 
-Do not proceed with the task until `which dws` succeeds.
+Do not proceed with the task until `dws` is found in PATH.
 
 ## Configuration
 
