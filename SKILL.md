@@ -36,20 +36,24 @@ If the command is not found, ask the user:
 Only proceed if the user agrees. Then check whether GitHub is reachable:
 
 ```bash
-curl -s --max-time 5 https://github.com > /dev/null && echo reachable || echo unreachable
+curl -s --max-time 5 https://raw.githubusercontent.com > /dev/null && echo reachable || echo unreachable
 ```
 
-**GitHub reachable** — install via npm:
+**GitHub reachable** — install via the official script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DingTalk-Real-AI/dingtalk-workspace-cli/main/scripts/install.sh | sh
+```
+
+**GitHub unreachable** — fall back to npm (npm registry is usually accessible without a proxy):
 
 ```bash
 npm install -g dingtalk-workspace-cli
 ```
 
-**GitHub unreachable** — tell the user:
+If npm also fails, tell the user:
 
-> GitHub 当前无法访问（可能需要代理或 VPN）。请您：
-> 1. 开启代理后重新运行安装命令，或
-> 2. 在可访问 GitHub 的网络环境下手动安装 `dws`，然后回来继续。
+> `dws` 安装失败，GitHub 和 npm 均无法访问。请您开启代理后重试，或手动从 https://github.com/DingTalk-Real-AI/dingtalk-workspace-cli/releases 下载对应平台的二进制文件并放入 PATH。
 
 Do not proceed with the task until `which dws` succeeds.
 
