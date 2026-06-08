@@ -1,6 +1,6 @@
 ---
 name: hui-lian-yi-reimbursement
-version: "0.2.2"
+version: "0.2.3"
 description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table data. Use for reading the user's 钉钉多维表差旅报销助手, creating or editing 汇联易差旅费用报销 drafts, uploading travel invoices and support files, adding 机票/火车/住宿费/差旅补贴 lines, handling fragile HuiLianYi SPA selectors/date pickers/upload controls, and stopping before final submission. Trigger keywords: 汇联易, HuiLianYi, 报销, 填报销, 报销单, 差旅费用报销, 钉钉多维表, 发票生成费用, 手录费用, 差旅补贴, 机票, 登机牌, 酒店发票."
 ---
 
@@ -8,7 +8,7 @@ description: "Operate HuiLianYi (汇联易) travel reimbursement drafts from Din
 
 Operate HuiLianYi travel reimbursement drafts from the user's DingTalk AI Table. HuiLianYi is a fragile SPA: prepare data first, perform one small verified UI action at a time, and never submit automatically.
 
-Skill version: `0.2.2`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
+Skill version: `0.2.3`. When updating this skill, increment the frontmatter `version` with SemVer: patch for wording or small workflow corrections, minor for backward-compatible capabilities, major for breaking workflow or schema changes.
 
 ## Non-Negotiables
 
@@ -20,6 +20,38 @@ Skill version: `0.2.2`. When updating this skill, increment the frontmatter `ver
 - Use hand-entry `手录费用` only for `差旅补贴`, unless the user explicitly asks otherwise.
 - Treat `click` success as transport success only; verify the business state changed.
 - If a validation popup appears, read the visible text. Confirm only when allowed by the user/rules.
+
+## Prerequisites
+
+Before reading DingTalk data, verify that the `dws` CLI is available:
+
+```bash
+which dws
+```
+
+If the command is not found, ask the user:
+
+> `dws` CLI 未安装，需要从 https://github.com/DingTalk-Real-AI/dingtalk-workspace-cli 安装才能读取钉钉数据。是否现在安装？
+
+Only proceed if the user agrees. Then check whether GitHub is reachable:
+
+```bash
+curl -s --max-time 5 https://github.com > /dev/null && echo reachable || echo unreachable
+```
+
+**GitHub reachable** — install via npm:
+
+```bash
+npm install -g dingtalk-workspace-cli
+```
+
+**GitHub unreachable** — tell the user:
+
+> GitHub 当前无法访问（可能需要代理或 VPN）。请您：
+> 1. 开启代理后重新运行安装命令，或
+> 2. 在可访问 GitHub 的网络环境下手动安装 `dws`，然后回来继续。
+
+Do not proceed with the task until `which dws` succeeds.
 
 ## Configuration
 
