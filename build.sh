@@ -1,23 +1,32 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
+SKILL_DIR="$DIST_DIR/skill"
+PACKAGE_NAME="hui-lian-yi-reimbursement"
 VERSION="$(node -p "require('./package.json').version")"
-OUTPUT_PATH="$DIST_DIR/hui-lian-yi-reimbursement-$VERSION.zip"
+ZIP="$DIST_DIR/${PACKAGE_NAME}-${VERSION}.zip"
 
 rm -rf "$DIST_DIR"
-mkdir -p "$DIST_DIR"
+mkdir -p "$SKILL_DIR"
 
-cd "$ROOT_DIR"
+rsync -a \
+  --exclude='.git' \
+  --exclude='dist' \
+  --exclude='.DS_Store' \
+  --exclude='.gitignore' \
+  --exclude='.env' \
+  --exclude='build.sh' \
+  --exclude='publish.sh' \
+  --exclude='config.yaml' \
+  --exclude='config.local.yaml' \
+  --exclude='references/config.yaml' \
+  --exclude='references/config.local.yaml' \
+  --exclude='.cache' \
+  "$ROOT_DIR/" "$SKILL_DIR/"
 
-zip -r "$OUTPUT_PATH" . \
-  -x '.git/*' \
-  -x '.gitignore' \
-  -x '.DS_Store' \
-  -x 'build.sh' \
-  -x 'config.local.yaml' \
-  -x '.cache/*' \
-  -x 'dist/*'
+zip -r "$ZIP" "$SKILL_DIR"
 
-echo "Built $OUTPUT_PATH"
+echo "Built $SKILL_DIR"
+echo "Zipped $ZIP"

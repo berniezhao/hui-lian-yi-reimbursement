@@ -1,29 +1,29 @@
 # hui-lian-yi-reimbursement
 
-Codex skill for drafting HuiLianYi (汇联易) travel reimbursement reports from DingTalk AI Table data.
+Codex 技能：从钉钉 AI 表格数据起草汇联易差旅报销单。
 
-This repository contains the skill instructions, configuration template, and focused references needed for Codex to:
+本仓库包含 Codex 所需的技能说明、配置模板和重点参考资料，用于：
 
-- read trip and voucher data from the configured DingTalk AI Table
-- create or continue HuiLianYi travel reimbursement drafts
-- upload airfare, hotel, boarding pass, and support files
-- add airfare, hotel, and travel subsidy expense lines
-- stop before final submission so the user can review and submit manually
+- 从配置好的钉钉 AI 表格读取差旅和凭证数据
+- 创建或继续汇联易差旅报销草稿
+- 上传机票、酒店、登机牌和辅助材料
+- 添加机票、酒店及差旅补贴费用行
+- 在最终提交前停止，让用户自行复核并手动提交
 
-## Safety Rules
+## 安全规则
 
-The skill is intentionally conservative because HuiLianYi is a fragile SPA and reimbursement submission is user-facing financial work.
+此技能故意保持保守，因为汇联易是一个脆弱的单页应用，报销提交流程属于面向用户的财务操作。
 
-- Codex must never click `提交` unless the user explicitly asks it to submit.
-- Codex should add one expense line at a time and verify the saved result before continuing.
-- Invoice-driven expenses should use `发票生成费用`; `手录费用` is reserved for `差旅补贴` unless the user says otherwise.
-- New reimbursement report reasons append:
+- 除非用户明确要求提交，否则 Codex 绝不能点击 `提交`。
+- Codex 应该一次只添加一条费用行，并在继续前验证保存结果。
+- 发票驱动的费用应使用 `发票生成费用`；`手录费用` 仅用于 `差旅补贴`，除非用户另有说明。
+- 新报销单的事由需追加：
 
 ```text
 （本报销单由Codex协助填写）
 ```
 
-## Repository Layout
+## 仓库结构
 
 ```text
 .
@@ -36,43 +36,43 @@ The skill is intentionally conservative because HuiLianYi is a fragile SPA and r
 └── package.json
 ```
 
-`SKILL.md` is the main runtime instruction file. Keep it concise and move detailed, situational workflow notes into `references/`.
+`SKILL.md` 是主要的运行时指令文件。请保持其简洁，并将详细的情景化流程说明放入 `references/`。
 
-## Local Configuration
+## 本地配置
 
-Create a local config file from the example:
+从示例创建本地配置文件：
 
 ```bash
 cp config.example.yaml config.local.yaml
 ```
 
-Then set:
+然后设置：
 
-- `dingtalk_aitable.url`: the user's DingTalk AI Table URL
-- `report_defaults`: HuiLianYi defaults such as invoice title, cost centers, travel type, travel scope, and payment receiver
+- `dingtalk_aitable.url`：用户的钉钉 AI 表格 URL
+- `report_defaults`：汇联易默认值，例如发票抬头、成本中心、出差类型、出差范围和收款方
 
-Do not commit `config.local.yaml`; it can contain personal or company-specific data.
+不要提交 `config.local.yaml`；该文件可能包含个人或公司特定的数据。
 
-## Build
+## 构建
 
-Build a distributable zip:
+构建可发布的 zip 包：
 
 ```bash
 npm run build
 ```
 
-The build output is written to `dist/` and excludes local config, cache files, `.git`, and build-only scripts.
+构建输出写入 `dist/`，并排除本地配置、缓存文件、`.git` 和仅用于构建的脚本。
 
-## Maintenance
+## 维护
 
-When changing behavior:
+修改行为时：
 
-- update `SKILL.md`
-- bump the skill version in `SKILL.md` using SemVer
-- keep `config.example.yaml` free of private data
-- prefer small, verifiable changes because browser selectors and date pickers are brittle
+- 更新 `SKILL.md`
+- 在 `SKILL.md` 中使用语义化版本号提升技能版本
+- 保持 `config.example.yaml` 无私有数据
+- 优先采用小而可验证的改动，因为浏览器选择器和日期选择器易碎
 
-Before committing, run:
+提交前运行：
 
 ```bash
 git diff --check

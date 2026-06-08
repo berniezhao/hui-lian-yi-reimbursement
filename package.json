@@ -1,8 +1,9 @@
 {
   "name": "hui-lian-yi-reimbursement",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
-    "build": "bash ./build.sh"
+    "build": "./build.sh",
+    "publish": "./publish.sh"
   }
 }
