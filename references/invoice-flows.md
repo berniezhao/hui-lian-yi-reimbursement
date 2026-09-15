@@ -7,8 +7,11 @@ Use this reference after the main `SKILL.md` plan is complete and you are operat
 - Work one line at a time.
 - Upload exactly one invoice for one invoice-driven line.
 - Do not use `手录费用` for airfare/train/hotel when invoice-driven flow is available.
+- After OCR, read every pre-filled field before editing. OCR often fills cities and seat class correctly (hotel 城市, train 出发/到达城市 and 座等); correct only what is wrong. It can also fill a wrong value (observed: 出发城市 set to a province-level entry for the airfare line) — verify field text, not OCR success.
 - Required support attachments are separate from invoice files.
-- Verify visible line creation after save.
+- Read back each saved line and verify business values, invoice and support associations before checkpointing. Follow [ui-and-recovery.md](ui-and-recovery.md) for bounded operations, Ant control primitives (date/city pickers, React inputs, file-input targeting) and unknown-save recovery.
+- Check current type-level attachment requirements as well as field-level `required`; see [api-contract.md](api-contract.md).
+- Keep invoice, support and excluded source rows separate; support amounts never add a second expense. OCR and server acceptance do not prove category/date matching.
 
 ## Airfare (`发票生成费用` -> `机票`)
 
@@ -28,6 +31,7 @@ Critical rule:
 
 - The airfare invoice PDF is not the boarding-pass attachment.
 - Match boarding pass by flight number / route / date / traveler, not date alone.
+- Same-day trip: the 开始结束日期 range is the same day clicked twice in the picker.
 
 Known upload target for boarding pass:
 
@@ -39,7 +43,9 @@ Known upload target for boarding pass:
 Useful DOM exploration:
 
 ```javascript
-Array.from(document.querySelectorAll('input[type=file]')).map((input, i) => {
+const activeForm = Array.from(document.querySelectorAll('.expense-form-box')).find(el => el.getClientRects().length > 0);
+if (!activeForm) throw new Error('No visible expense form');
+Array.from(activeForm.querySelectorAll('input[type=file]')).map((input, i) => {
   const item = input.closest('.ant-form-item, [formlabel], .expense-form-item');
   return { i, itemText: item && item.innerText, outer: input.outerHTML };
 });
@@ -72,11 +78,13 @@ Use invoice-driven flow when train ticket/invoice material exists.
 
 Check after upload:
 
-- travel date
+- travel date (the ride date, not the invoice issue date — a ticket ridden 09-08 can be invoiced 09-09)
 - route
-- seat class
+- two seat fields: `座等` (usually OCR-filled) and `火车报销金额座等` (a separate required selector opened from the field; select the row cell, not the bare radio)
 - amount
 - required attachment validation
+
+Railway e-invoices without an order screenshot were accepted for save (verified 2026-09-14: both train lines had invoice PDFs only); do not block on a missing order screenshot, but record it in the checkpoint if absent.
 
 Do not assume `识别成功` means the expense line is ready; final save can still fail on required train fields.
 
@@ -95,10 +103,10 @@ Basic steps:
 
 1. Click `手录费用`.
 2. Choose `差旅补贴`.
-3. Fill amount.
-4. Fill `发生日期`.
-5. Fill `开始结束日期`.
-6. Verify day count.
+3. Fill `发生日期` — it defaults to today; set it to the trip start.
+4. Fill `开始结束日期` with the actual trip range.
+5. Verify the auto-recalculated day count.
+6. Fill the amount through the React native-setter pattern (plain `fill` is unreliable on the controlled amount input; see the Ant control primitives in [ui-and-recovery.md](ui-and-recovery.md)).
 7. Fill reason if needed.
 8. Save.
 
@@ -110,10 +118,10 @@ The subsidy `开始结束日期` field is an Ant readonly range picker. Plain `f
 
 Stable pattern:
 
-1. Click the range field.
+1. Trigger the picker with `mousedown` + `focus()` + `click()` on the input (a plain click on the field wrapper may not open it; verified 2026-09-14).
 2. If a wrong range exists, click `close-circle` to clear it.
 3. Click the calendar day for the start date once.
-4. Click the calendar day for the end date once.
+4. Click the calendar day for the end date once (same day twice for a same-day range).
 5. Verify both visible inputs and the recalculated day count.
 
 Example proven on 2026-05-02:
@@ -128,6 +136,6 @@ If the picker collapses both start/end to the same date, clear it and repeat. Do
 
 If save opens a popup containing `检查结果` or `超费用标准`:
 
-- click `确认` only if the user has explicitly authorized continuing
-- otherwise pause and ask
+- read the exact message and use existing explicit authorization for that override, if present
+- if it requires an unauthorized business-rule override, pause the affected save and ask; do not treat informational confirmation as a new permission boundary
 

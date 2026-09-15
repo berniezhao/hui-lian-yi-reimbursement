@@ -1,6 +1,32 @@
 # HuiLianYi Failure Modes
 
-Use this reference when the SPA behaves unexpectedly. Prefer visible evidence over memory.
+Use this reference when the SPA behaves unexpectedly. For visibility, condition waits, stale-ref selectors, login/proxy diagnosis and interrupted-save recovery, use [ui-and-recovery.md](ui-and-recovery.md). Stop after one evidence-based retry of an unexpected action. For an unknown create result, read back before retrying; do not apply the UI retry rule to a blind create POST.
+
+## Dialog Radio Unchecked / `确 定` Stays Disabled
+
+Symptoms:
+
+- Clicking a visible `radio` ref in a selector dialog reports success but `checked` stays `false`.
+- `确 定` remains disabled after selecting.
+
+Fix (verified 2026-09-14):
+
+- Narrow the dialog list to a single row with the in-dialog search box first.
+- Click the row/cell containing the option, not the bare `radio` ref.
+- Verify `checked=true` before clicking `确 定`.
+- See [ui-and-recovery.md](ui-and-recovery.md) main-form selectors.
+
+## Expense List Shows an Unexpected Date
+
+Symptoms:
+
+- A saved line's `日期` in the expense list is today (or another non-trip date) although the line was planned with trip dates.
+
+Fix:
+
+- The list `日期` column shows the creation date, not the business date (UI-verified 2026-09-15).
+- Open the line (序号 cell, full mouse-event sequence) and verify the business dates from the `.expense-form-box` inputs instead.
+- See [ui-and-recovery.md](ui-and-recovery.md) expense-line readback.
 
 ## Main Form Edits Restricted After Details Exist
 
@@ -30,14 +56,6 @@ Fix:
 - Click `确 定`.
 - Confirm main form visible value.
 
-Proven on 2026-05-02 in draft `ER31415213` for:
-
-- `发票抬头`: `深圳卓正光锥科技有限公司-021`
-- `成本中心`: `集团职能部门 / 软件研发部 / 软件研发部`
-- `是否属于研发项目费用`: `否`
-- `出差类型`: `其他（请在事由处说明）`
-- `出差范围`: `跨省、直辖市`
-
 ## Ant Range Picker Same-Day Collapse
 
 Symptoms:
@@ -53,12 +71,6 @@ Fix:
 - Clear wrong values with `close-circle`.
 - Click start once, then end once.
 - Verify both inputs and day count.
-
-Proven on 2026-05-02 in draft `ER31415213`:
-
-- range `2026-04-14 ~ 2026-04-18`
-- duration `5`
-- saved line `EXP1267751812`
 
 ## Wrong Save Button Container
 
@@ -156,6 +168,7 @@ Symptoms:
 
 Fix:
 
-- if the user already authorized continuing, click popup `确认` by ref
-- otherwise stop and ask
+- Read the exact validation message and determine whether it requests a business-rule override.
+- Existing explicit authorization to continue that override remains valid; do not ask again.
+- If the override is not authorized, pause the affected save and ask; ordinary informational confirmation can proceed within the draft task.
 
