@@ -13,7 +13,7 @@ import sys
 HOSTS = [
     # WorkBuddy must be checked first: it co-injects other agents' session
     # vars (e.g. CLAUDE_SESSION_ID) but these two are host-exclusive.
-    ("WorkBuddy", ["CLIENT_INFO_IDE_TYPE", "WORKBUDDY_APP_VERSION"]),
+    ("WorkBuddy", ["WORKBUDDY_APP_VERSION"]),
     ("Claude Code", ["CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT"]),
     ("Codex", ["CODEX_SANDBOX", "CODEX_HOME", "CODEX_CLI_VERSION"]),
     ("Cursor", ["CURSOR_AGENT", "CURSOR_TRACE_ID"]),
