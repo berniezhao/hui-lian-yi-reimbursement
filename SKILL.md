@@ -1,6 +1,6 @@
 ---
 name: hui-lian-yi-reimbursement
-version: "0.5.0"
+version: "0.5.1"
 description: "Create and edit HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table records, including invoice-driven expenses, support attachments and travel subsidy. Use for 汇联易差旅报销填报、核对与恢复；stop before final submission unless explicitly requested."
 ---
 
@@ -102,7 +102,7 @@ Common values come from `report_defaults` in config:
 
 | Field | Value/source |
 |---|---|
-| `事由` | DingTalk `报销建议事由` or concise trip reason. For a new report, append a new final line: `（本报销单由Codex协助填写）` |
+| `事由` | DingTalk `报销建议事由` or concise trip reason. For a new report, append a new final line: `（本报销单由<agent>协助填写）`, where `<agent>` comes from the signature resolution below |
 | `发票抬头` | search `report_defaults.invoice_title_search`, choose `report_defaults.invoice_title` |
 | `成本中心-一级` | `report_defaults.cost_center_1` |
 | `成本中心-二级` | `report_defaults.cost_center_2` |
@@ -111,6 +111,14 @@ Common values come from `report_defaults` in config:
 | `出差类型` | `report_defaults.travel_type` |
 | `出差范围` | derive from trip; fall back to `report_defaults.travel_scope_default` |
 | `收款方` | `report_defaults.payment_receiver`, usually `current_user` |
+
+### Signature name
+
+Resolve `<agent>` in this order; never guess it from self-knowledge, because several agents' environment variables can coexist in one session:
+
+1. `report_defaults.agent_signature` in config, if set.
+2. Otherwise run `python3 scripts/detect-agent.py` and use its output.
+3. The script already falls back to `AI助手`, so there is no third case to handle.
 
 Use the modal selector procedure in [references/ui-and-recovery.md](references/ui-and-recovery.md). Verify and save every required header field, then record the draft identity and saved header checkpoint before creating expenses.
 

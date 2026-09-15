@@ -14,3 +14,6 @@ report_defaults:
   travel_type: "其他（请在事由处说明）"
   travel_scope_default: "跨省、直辖市"
   payment_receiver: "current_user"
+  # Optional. Name used in the 事由 signature line 「（本报销单由…协助填写）」.
+  # Leave unset to auto-detect the host agent via scripts/detect-agent.py.
+  # agent_signature: "Claude Code"
