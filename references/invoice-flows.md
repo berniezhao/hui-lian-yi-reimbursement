@@ -112,6 +112,16 @@ Basic steps:
 
 Prefer `手录费用` for subsidy. On 2026-05-02, nearby `手录行程及差旅补贴` returned click success but no visible state change.
 
+### Subsidy Amount Field Trap (verified 2026-09-23)
+
+The subsidy `金额` field is a **compact group: currency combobox (`#invoiceCurrencyCode`, an ant-select) + `ant-input-number`**. Do not type the amount into the first input — it lands in the currency combobox search, which shows `暂无数据` (class `error-message`) and silently blocks every subsequent save click while the drawer stays open.
+
+Correct order:
+
+1. If the combobox already shows garbage text, clear its input, type `CNY`, then commit the `CNY 人民币` option with full mousedown/mouseup/click on the dropdown li.
+2. Set the amount on the `.ant-input-number input` inside the same 金额 form item using the React native-setter pattern.
+3. Verify no `[class*=error]` elements with `暂无数据` remain inside the form, then save.
+
 ### Ant Range Picker
 
 The subsidy `开始结束日期` field is an Ant readonly range picker. Plain `fill`, keyboard typing, or native DOM setters do not reliably update business state.

@@ -1,6 +1,6 @@
 ---
 name: hui-lian-yi-reimbursement
-version: "0.5.1"
+version: "0.5.2"
 description: "Create and edit HuiLianYi (汇联易) travel reimbursement drafts from DingTalk AI Table records, including invoice-driven expenses, support attachments and travel subsidy. Use for 汇联易差旅报销填报、核对与恢复；stop before final submission unless explicitly requested."
 ---
 
